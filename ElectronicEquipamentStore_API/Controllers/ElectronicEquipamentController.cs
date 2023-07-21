@@ -2,11 +2,13 @@
 using ElectronicEquipamentStore_API.Data;
 using ElectronicEquipamentStore_API.Models;
 using ElectronicEquipamentStore_API.Models.Dto;
+using ElectronicEquipamentStore_API.Repository.IRepository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using System.Net;
 
 namespace ElectronicEquipamentStore_API.Controllers
 {
@@ -16,13 +18,13 @@ namespace ElectronicEquipamentStore_API.Controllers
     public class ElectronicEquipamentController : ControllerBase
     {
         private readonly ILogger<ElectronicEquipamentController> _logger;
-        private readonly ApplicationDbContext _db;
+        private readonly IElectronicEquipamentRepository _equipamentRepository;
         private readonly IMapper _mapper;
 
-        public ElectronicEquipamentController(ILogger<ElectronicEquipamentController> logger, ApplicationDbContext db, IMapper mapper)
+        public ElectronicEquipamentController(ILogger<ElectronicEquipamentController> logger, IElectronicEquipamentRepository equipamentRepository, IMapper mapper)
         {
             _logger = logger;
-            _db = db;
+            _equipamentRepository = equipamentRepository;
             _mapper = mapper;
         }
 
@@ -30,36 +32,34 @@ namespace ElectronicEquipamentStore_API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<ElectronicEquipamentDto>>> GetAllEquipament()
         {
-            _logger.LogInformation("Getting all equipament");
+            var equipaments = await _equipamentRepository.GetAll();
 
-            IEnumerable<ElectronicEquipament> listEquipaments = await _db.Equipaments.ToListAsync();
-            
-            return Ok(_mapper.Map<IEnumerable<ElectronicEquipamentDto>>(listEquipaments));
-
+            return Ok(_mapper.Map<IEnumerable<ElectronicEquipamentDto>>(equipaments));
         }
 
         [HttpGet("id:int", Name = "GetEquipament")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ElectronicEquipamentDto>> GetEquipamentById(int id)
+        public async Task<ActionResult<APIResponse>> GetEquipamentById(int id)
         {
-            if (id <= 0)
-            {
-                _logger.LogError("Id out of range");
-                return BadRequest();
-            }
+                if (id <= 0)
+                {
+                    return BadRequest();
+                }
 
-            var equipament = (await _db.Equipaments.FirstOrDefaultAsync(x => x.Id == id));
+                var equipament = await _equipamentRepository.Get(x => x.Id == id);
 
-            if (equipament == null)
-            {
-                return NotFound();
-            }
+                if (equipament == null)
+                {
+                    return NotFound();
+                }
 
-            _logger.LogInformation("Equipment was obtained");
-            return Ok(_mapper.Map<ElectronicEquipamentDto>(equipament));
+                var equipamentDto = _mapper.Map<ElectronicEquipamentDto>(equipament);
+
+                return Ok(equipamentDto);
         }
+   
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -77,22 +77,21 @@ namespace ElectronicEquipamentStore_API.Controllers
                 return BadRequest(ModelState);
             }
 
-            if ((await _db.Equipaments.FirstOrDefaultAsync(x => x.Name == equipamentCreateDto.Name)) != null)
+            if ((await _equipamentRepository.Get(x => x.Name == equipamentCreateDto.Name, false)) != null)
             {
                 ModelState.AddModelError("Name", "This name already exists");
                 return BadRequest(ModelState);
             }
 
             var equipament = _mapper.Map<ElectronicEquipament>(equipamentCreateDto);
-            equipament.CreationDate = DateTime.Now;
-            equipament.UpdateDate = DateTime.Now;
 
-            await _db.Equipaments.AddAsync(equipament);
-            await _db.SaveChangesAsync();
+            equipament.CreationDate = DateTime.Now;
+            equipament.UpdateDate= DateTime.Now;
+
+            await _equipamentRepository.Create(equipament);
 
             var equipamentDto = _mapper.Map<ElectronicEquipamentDto>(equipament);
 
-            _logger.LogInformation("Equipament created");
             return CreatedAtRoute("GetEquipament", new { id = equipamentDto.Id }, equipamentDto);
 
         }
@@ -107,17 +106,15 @@ namespace ElectronicEquipamentStore_API.Controllers
                 return BadRequest();
             }
 
-            var equipament = await _db.Equipaments.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            var equipament = await _equipamentRepository.Get(x => x.Id == id, false);
 
             if (equipament == null) 
             {
                 return NotFound();
             }
 
-            _db.Equipaments.Remove(equipament);
-            await _db.SaveChangesAsync();
+            await _equipamentRepository.Remove(equipament);
 
-            _logger.LogInformation("Equipament deleted");
             return NoContent();
         }
 
@@ -137,7 +134,7 @@ namespace ElectronicEquipamentStore_API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var equipament = await _db.Equipaments.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            var equipament = await _equipamentRepository.Get(x => x.Id == id, false);
 
             if (equipament == null)
             {
@@ -145,12 +142,9 @@ namespace ElectronicEquipamentStore_API.Controllers
             }
 
             equipament = _mapper.Map<ElectronicEquipament>(equipamentUpdateDto);
-            equipament.UpdateDate = DateTime.Now;
 
-            _db.Equipaments.Update(equipament);
-            await _db.SaveChangesAsync();
+            await _equipamentRepository.Update(equipament);
 
-            _logger.LogInformation("Equipament Updated");
             return NoContent();
         }
     }
