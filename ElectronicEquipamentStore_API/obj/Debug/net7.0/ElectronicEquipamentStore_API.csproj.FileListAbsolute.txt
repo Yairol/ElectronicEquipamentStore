@@ -115,3 +115,5 @@ D:\Serial-X\Proyecto\ElectronicEquipamentStore\ElectronicEquipamentStore_API\obj
 D:\Serial-X\Proyecto\ElectronicEquipamentStore\ElectronicEquipamentStore_API\obj\Debug\net7.0\ElectronicEquipamentStore_API.csproj.CopyComplete
 D:\Serial-X\Proyecto\ElectronicEquipamentStore\ElectronicEquipamentStore_API\obj\Debug\net7.0\ElectronicEquipamentStore_API.genruntimeconfig.cache
 D:\Serial-X\Proyecto\ElectronicEquipamentStore\ElectronicEquipamentStore_API\obj\Debug\net7.0\ref\ElectronicEquipamentStore_API.dll
+D:\Serial-X\Proyecto\ElectronicEquipamentStore\ElectronicEquipamentStore_API\bin\Debug\net7.0\AutoMapper.dll
+D:\Serial-X\Proyecto\ElectronicEquipamentStore\ElectronicEquipamentStore_API\bin\Debug\net7.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll

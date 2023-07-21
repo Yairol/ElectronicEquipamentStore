@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "DurK/OUKo/EP3Bj50ZUfz/hPlVrdSwEv98N6qM9yeDLv8AtXr1pJY26mBUY73q2yg/E4FhY26Fs7FhC9+sUuww==",
+  "dgSpecHash": "RrZTkTrSeuK9Sy5ZpFs3174QmaMCcTBjHLAJlQzCF5tEHWuPRBRiGsPwDmdohkdWj8vT1Mgz3Ej7XOeSQZTJ2Q==",
   "success": true,
   "projectFilePath": "D:\\Serial-X\\Proyecto\\ElectronicEquipamentStore\\ElectronicEquipamentStore_API\\ElectronicEquipamentStore_API.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Yairol\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
+    "C:\\Users\\Yairol\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
     "C:\\Users\\Yairol\\.nuget\\packages\\azure.core\\1.24.0\\azure.core.1.24.0.nupkg.sha512",
     "C:\\Users\\Yairol\\.nuget\\packages\\azure.identity\\1.6.0\\azure.identity.1.6.0.nupkg.sha512",
     "C:\\Users\\Yairol\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
